@@ -16,12 +16,12 @@ Este proyecto permite gestionar servidores de Minecraft tanto en versión **Java
 
 ## Configuración y Ajustes
 
-### 🚀 Java (PaperMC)
+### Java (PaperMC)
 - **Versión de Java:** Requiere **Java 21**. El script `java/start.bat` ya está configurado para buscar el ejecutable en `C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\`.
 - **Memoria RAM:** Por defecto usa 2GB. Puedes cambiar `-Xms2G -Xmx2G` en el `.bat` para asignar más.
 - **Cross-play:** Gracias a GeyserMC, los jugadores de Bedrock pueden entrar usando la IP del servidor Java (Puerto 19132 por defecto para Geyser).
 
-### 🧱 Bedrock (Official)
+### Bedrock (Official)
 - **Ajustes del servidor:** Edita `bedrock/server.properties` para modificar:
   - `server-name`: Nombre que verán los jugadores.
   - `gamemode`: Modo de juego (survival, creative, etc.).
