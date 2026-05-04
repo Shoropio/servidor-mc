@@ -1,0 +1,50 @@
+# Binarios de servidores (se descargan con setup.js)
+java/server.jar
+bedrock/bedrock_server.exe
+bedrock/*.dll
+bedrock/*.pdb
+bedrock/bedrock_server_how_to.html
+
+# Plugins
+java/plugins/*.jar
+
+# Datos de los mundos
+java/world/
+java/world_nether/
+java/world_the_end/
+bedrock/worlds/
+
+# Archivos de configuración dinámicos
+java/server.properties
+java/permissions.yml
+java/help.yml
+java/commands.yml
+java/whitelist.json
+java/banned-ips.json
+java/banned-players.json
+java/eula.txt
+bedrock/server.properties
+bedrock/allowlist.json
+bedrock/permissions.json
+
+# Carpetas de datos de plugins
+java/plugins/Geyser-Spigot/
+java/plugins/floodgate/
+java/plugins/spark/
+java/.paper-remapped/
+java/cache/
+java/libraries/
+java/logs/
+java/usercache.json
+
+# Bedrock logs y temporales
+bedrock/logs/
+bedrock/definitions/
+bedrock/resource_packs/
+bedrock/behavior_packs/
+
+# Sistema y temporales
+.DS_Store
+Thumbs.db
+*.log
+bedrock/server.zip
