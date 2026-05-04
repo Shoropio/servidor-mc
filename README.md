@@ -13,41 +13,48 @@ Este proyecto permite ejecutar fácilmente servidores de Minecraft sin configura
 ## ⚙️ Requisitos
 
 - 🖥️ Windows 10 / 11  
-- ☕ Java 21 instalado (para PaperMC)  
+- ☕ **Java 21** instalado (para PaperMC)  
+- 🟢 **Node.js** instalado (para ejecutar el script de instalación inicial)  
 - 🌐 Conexión a internet (para descargas iniciales)  
-- 🔓 Puertos abiertos (si quieres acceso externo)
+- 🔓 Puertos abiertos (si quieres acceso externo: 25565 y 19132)
 
 ---
 
 ## 📂 Estructura del Proyecto
 
 
+```text
 minecraft-server-manager/
 │
-├── java/
-│ ├── server.jar
-│ ├── start.bat
-│ └── plugins/
-│ ├── GeyserMC
-│ └── Floodgate
+├── java/               # Archivos del servidor Java
+│   ├── server.jar      # PaperMC
+│   └── plugins/        # Geyser, Floodgate, etc.
 │
-├── bedrock/
-│ ├── bedrock_server.exe
-│ ├── server.properties
-│ └── start.bat
+├── bedrock/            # Archivos del servidor Bedrock
+│   └── ...             # Archivos oficiales de Mojang
 │
-└── start.bat
+├── setup.js            # Script de instalación automática 🚀
+└── start.bat           # Menú de inicio rápido
+```
 
 
 ---
 
-## 🚀 Cómo empezar
+### 1️⃣ Instalación Inicial
+Si es la primera vez que usas el proyecto, necesitas descargar los archivos del servidor:
 
-1. Ejecuta `start.bat` en la carpeta raíz  
-2. Selecciona una opción:
+```powershell
+node setup.js
+```
+*El script incluye una **barra de progreso en tiempo real** y configurará automáticamente la EULA y los scripts de inicio.*
+
+### 2️⃣ Iniciar el Servidor
+Una vez descargado todo:
+1. Ejecuta `start.bat` en la carpeta raíz.  
+2. Selecciona la opción deseada:
    - `1` → Servidor **Java (PaperMC)**  
    - `2` → Servidor **Bedrock**  
-3. ¡Listo! El servidor iniciará automáticamente  
+3. ¡Listo! El servidor iniciará automáticamente.
 
 ---
 
@@ -59,7 +66,9 @@ minecraft-server-manager/
 - **Memoria RAM:**
   Edita en `java/start.bat`:
 
+```bash
 -Xms2G -Xmx2G
+```
 
 - **Plugins incluidos:**
 - GeyserMC → Permite jugadores Bedrock  
@@ -68,7 +77,9 @@ minecraft-server-manager/
 - **Java en PATH (recomendado):**
 Asegúrate de poder ejecutar:
 
+```powershell
 java -version
+```
 
 
 ---
