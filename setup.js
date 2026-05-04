@@ -3,7 +3,7 @@ const path = require('path');
 const https = require('https');
 const { execSync } = require('child_process');
 
-const USER_AGENT = 'MinecraftServerSetup/1.0 (contact@example.com)';
+const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 function fetch(url) {
     return new Promise((resolve, reject) => {
@@ -18,15 +18,64 @@ function fetch(url) {
     });
 }
 
+const http = require('http');
+
 function downloadFile(url, dest) {
     return new Promise((resolve, reject) => {
-        try {
-            console.log(`Downloading via PowerShell: ${url}`);
-            execSync(`powershell -Command "Invoke-WebRequest -Uri '${url}' -OutFile '${dest}' -UserAgent '${USER_AGENT}'"`, { stdio: 'inherit' });
-            resolve();
-        } catch (err) {
-            reject(err);
-        }
+        const options = {
+            headers: { 'User-Agent': USER_AGENT }
+        };
+
+        const request = (currentUrl) => {
+            const client = currentUrl.startsWith('https') ? https : http;
+            client.get(currentUrl, options, (res) => {
+                if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                    const nextUrl = res.headers.location.startsWith('http') 
+                        ? res.headers.location 
+                        : new URL(res.headers.location, currentUrl).href;
+                    return request(nextUrl);
+                }
+
+                if (res.statusCode !== 200) {
+                    return reject(new Error(`Failed to download: ${res.statusCode} ${res.statusMessage}`));
+                }
+
+                const totalSize = parseInt(res.headers['content-length'], 10);
+                let downloadedSize = 0;
+                const file = fs.createWriteStream(dest);
+
+                res.on('data', (chunk) => {
+                    downloadedSize += chunk.length;
+                    if (totalSize) {
+                        const percent = ((downloadedSize / totalSize) * 100).toFixed(2);
+                        const downloadedMB = (downloadedSize / 1024 / 1024).toFixed(2);
+                        const totalMB = (totalSize / 1024 / 1024).toFixed(2);
+                        process.stdout.write(`\rDescargando: ${percent}% (${downloadedMB} MB / ${totalMB} MB)`);
+                    } else {
+                        process.stdout.write(`\rDescargado: ${(downloadedSize / 1024 / 1024).toFixed(2)} MB`);
+                    }
+                });
+
+                res.pipe(file);
+
+                file.on('finish', () => {
+                    file.close();
+                    process.stdout.write('\n');
+                    resolve();
+                });
+
+                file.on('error', (err) => {
+                    console.error(`\nFile error: ${err.message}`);
+                    fs.unlink(dest, () => reject(err));
+                });
+
+            }).on('error', (err) => {
+                console.error(`\nRequest error: ${err.message}`);
+                fs.unlink(dest, () => reject(err));
+            });
+        };
+
+        request(url);
     });
 }
 
