@@ -39,3 +39,7 @@ Este proyecto permite gestionar servidores de Minecraft tanto en versión **Java
 
 ---
 *Nota: Asegúrate de que los puertos (25565 para Java y 19132 para Bedrock) estén abiertos en tu firewall/router si deseas que personas fuera de tu red local se unan.*
+
+## Licencia
+
+© 2026 Shoropio Corporation. Todos los derechos reservados.
