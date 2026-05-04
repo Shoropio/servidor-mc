@@ -41,10 +41,14 @@ minecraft-server-manager/
 ---
 
 ### 1️⃣ Instalación Inicial
-Si es la primera vez que usas el proyecto, necesitas descargar los archivos del servidor:
+Si es la primera vez que usas el proyecto, necesitas descargar los archivos del servidor (Requiere Git):
 
 ```powershell
 git clone https://github.com/Shoropio/servidor-mc.git
+```
+
+```powershell
+cd servidor-mc
 ```
 
 ```powershell
