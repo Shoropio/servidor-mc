@@ -106,32 +106,51 @@ async function setupJava() {
     console.log('¡Configuración del servidor Java completada!');
 }
 
-async function setupBedrock() {
-    if (fs.existsSync(path.join(__dirname, 'bedrock', 'bedrock_server.exe'))) {
-        console.log('El servidor de Bedrock ya existe, saltando...');
-        return;
+function compareVersions(v1, v2) {
+    const parts1 = v1.split('.').map(Number);
+    const parts2 = v2.split('.').map(Number);
+    for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+        const p1 = parts1[i] || 0;
+        const p2 = parts2[i] || 0;
+        if (p1 > p2) return 1;
+        if (p1 < p2) return -1;
     }
-    console.log('Configurando el servidor dedicado de Bedrock...');
+    return 0;
+}
+
+async function setupBedrock() {
+    const bedrockDir = path.join(__dirname, 'bedrock');
+    const exePath = path.join(bedrockDir, 'bedrock_server.exe');
+    
+    console.log('Buscando actualizaciones para el servidor de Bedrock...');
     const metadataUrl = 'https://raw.githubusercontent.com/kittizz/bedrock-server-downloads/main/bedrock-server-downloads.json';
     const metadata = JSON.parse(await fetch(metadataUrl));
     
-    const releaseVersions = Object.keys(metadata.release);
+    const releaseVersions = Object.keys(metadata.release).sort(compareVersions);
     const latestVersion = releaseVersions[releaseVersions.length - 1];
     const downloadUrl = metadata.release[latestVersion].windows.url;
-    const dest = path.join(__dirname, 'bedrock', 'server.zip');
+    const dest = path.join(bedrockDir, 'server.zip');
+
+    if (fs.existsSync(exePath)) {
+        console.log(`El servidor de Bedrock ya existe (Versión instalada detectada).`);
+        console.log(`La última versión disponible es: ${latestVersion}`);
+        console.log('Si deseas actualizar, borra la carpeta "bedrock" y vuelve a ejecutar este script.');
+        return;
+    }
+
+    console.log(`Configurando el servidor dedicado de Bedrock v${latestVersion}...`);
     
-    if (!fs.existsSync(path.join(__dirname, 'bedrock'))) fs.mkdirSync(path.join(__dirname, 'bedrock'));
+    if (!fs.existsSync(bedrockDir)) fs.mkdirSync(bedrockDir);
     
     console.log(`Descargando el servidor de Bedrock ${latestVersion}...`);
     await downloadFile(downloadUrl, dest);
     
     console.log('Extrayendo el servidor de Bedrock...');
-    // Using PowerShell to expand archive since it's Windows
-    execSync(`powershell -Command "Expand-Archive -Path '${dest}' -DestinationPath '${path.join(__dirname, 'bedrock')}' -Force"`);
+    execSync(`powershell -Command "Expand-Archive -Path '${dest}' -DestinationPath '${bedrockDir}' -Force"`);
     
     fs.unlinkSync(dest);
     
-    fs.writeFileSync(path.join(__dirname, 'bedrock', 'start.bat'), `@echo off\nbedrock_server.exe\npause\n`);
+    fs.writeFileSync(path.join(bedrockDir, 'start.bat'), `@echo off\nbedrock_server.exe\npause\n`);
     
     console.log('¡Configuración del servidor Bedrock completada!');
 }
