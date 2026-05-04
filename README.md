@@ -24,7 +24,7 @@ Este proyecto permite ejecutar fácilmente servidores de Minecraft sin configura
 
 
 ```text
-minecraft-server-manager/
+servidor-mc/
 │
 ├── java/               # Archivos del servidor Java
 │   ├── server.jar      # PaperMC
@@ -164,6 +164,5 @@ Las contribuciones son bienvenidas. Si deseas mejorar este proyecto, por favor s
 
 ---
 
-## 📝 Notas sobre la licencia
 
 © 2026 Shoropio Corporation. Todos los derechos reservados.
