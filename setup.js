@@ -37,7 +37,7 @@ function downloadFile(url, dest) {
                 }
 
                 if (res.statusCode !== 200) {
-                    return reject(new Error(`Failed to download: ${res.statusCode} ${res.statusMessage}`));
+                    return reject(new Error(`Error al descargar: ${res.statusCode} ${res.statusMessage}`));
                 }
 
                 const totalSize = parseInt(res.headers['content-length'], 10);
@@ -65,12 +65,12 @@ function downloadFile(url, dest) {
                 });
 
                 file.on('error', (err) => {
-                    console.error(`\nFile error: ${err.message}`);
+                    console.error(`\nError de archivo: ${err.message}`);
                     fs.unlink(dest, () => reject(err));
                 });
 
             }).on('error', (err) => {
-                console.error(`\nRequest error: ${err.message}`);
+                console.error(`\nError de solicitud: ${err.message}`);
                 fs.unlink(dest, () => reject(err));
             });
         };
@@ -81,10 +81,10 @@ function downloadFile(url, dest) {
 
 async function setupJava() {
     if (fs.existsSync(path.join(__dirname, 'java', 'server.jar'))) {
-        console.log('Java server already exists, skipping...');
+        console.log('El servidor de Java ya existe, saltando...');
         return;
     }
-    console.log('Setting up Java (PaperMC) server...');
+    console.log('Configurando el servidor de Java (PaperMC)...');
     const project = 'paper';
     const versionsData = JSON.parse(await fetch(`https://api.papermc.io/v2/projects/${project}`));
     const latestVersion = versionsData.versions[versionsData.versions.length - 1];
@@ -97,21 +97,21 @@ async function setupJava() {
     
     if (!fs.existsSync(path.join(__dirname, 'java'))) fs.mkdirSync(path.join(__dirname, 'java'));
     
-    console.log(`Downloading Paper ${latestVersion} build ${latestBuild}...`);
+    console.log(`Descargando Paper ${latestVersion} compilación ${latestBuild}...`);
     await downloadFile(downloadUrl, dest);
     
     fs.writeFileSync(path.join(__dirname, 'java', 'eula.txt'), 'eula=true\n');
     fs.writeFileSync(path.join(__dirname, 'java', 'start.bat'), `@echo off\njava -Xms2G -Xmx2G -jar server.jar nogui\npause\n`);
     
-    console.log('Java server setup complete!');
+    console.log('¡Configuración del servidor Java completada!');
 }
 
 async function setupBedrock() {
     if (fs.existsSync(path.join(__dirname, 'bedrock', 'bedrock_server.exe'))) {
-        console.log('Bedrock server already exists, skipping...');
+        console.log('El servidor de Bedrock ya existe, saltando...');
         return;
     }
-    console.log('Setting up Bedrock Dedicated Server...');
+    console.log('Configurando el servidor dedicado de Bedrock...');
     const metadataUrl = 'https://raw.githubusercontent.com/kittizz/bedrock-server-downloads/main/bedrock-server-downloads.json';
     const metadata = JSON.parse(await fetch(metadataUrl));
     
@@ -122,10 +122,10 @@ async function setupBedrock() {
     
     if (!fs.existsSync(path.join(__dirname, 'bedrock'))) fs.mkdirSync(path.join(__dirname, 'bedrock'));
     
-    console.log(`Downloading Bedrock Server ${latestVersion}...`);
+    console.log(`Descargando el servidor de Bedrock ${latestVersion}...`);
     await downloadFile(downloadUrl, dest);
     
-    console.log('Extracting Bedrock Server...');
+    console.log('Extrayendo el servidor de Bedrock...');
     // Using PowerShell to expand archive since it's Windows
     execSync(`powershell -Command "Expand-Archive -Path '${dest}' -DestinationPath '${path.join(__dirname, 'bedrock')}' -Force"`);
     
@@ -133,17 +133,17 @@ async function setupBedrock() {
     
     fs.writeFileSync(path.join(__dirname, 'bedrock', 'start.bat'), `@echo off\nbedrock_server.exe\npause\n`);
     
-    console.log('Bedrock server setup complete!');
+    console.log('¡Configuración del servidor Bedrock completada!');
 }
 
 async function main() {
     try {
         await setupJava();
         await setupBedrock();
-        console.log('\nAll servers have been set up successfully!');
-        console.log('Go to java/ or bedrock/ and run start.bat to begin.');
+        console.log('\n¡Todos los servidores se han configurado correctamente!');
+        console.log('Ve a java/ o bedrock/ y ejecuta start.bat para comenzar.');
     } catch (err) {
-        console.error('Error during setup:', err);
+        console.error('Error durante la configuración:', err);
     }
 }
 
