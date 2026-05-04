@@ -33,7 +33,7 @@ minecraft-server-manager/
 ├── bedrock/            # Archivos del servidor Bedrock
 │   └── ...             # Archivos oficiales de Mojang
 │
-├── setup.js            # Script de instalación automática 🚀
+├── setup.js            # Script de instalación automática
 └── start.bat           # Menú de inicio rápido
 ```
 
@@ -42,6 +42,10 @@ minecraft-server-manager/
 
 ### 1️⃣ Instalación Inicial
 Si es la primera vez que usas el proyecto, necesitas descargar los archivos del servidor:
+
+```powershell
+git clone https://github.com/Shoropio/servidor-mc.git
+```
 
 ```powershell
 node setup.js
