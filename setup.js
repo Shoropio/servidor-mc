@@ -147,7 +147,7 @@ async function setupJava() {
     if (!fs.existsSync(javaDir)) fs.mkdirSync(javaDir);
     
     console.log(`Descargando Paper ${latestVersion} compilación ${latestBuildId}...`);
-    await downloadFile(downloadUrl, dest);
+    await downloadFile(downloadUrl, jarPath);
     
     // Usar el requisito de Java de la API si existe, si no el mapeo local
     const javaVer = versionData.version.java?.version?.minimum || getRequiredJavaVersion(latestVersion);
