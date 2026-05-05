@@ -44,7 +44,8 @@ function getRequiredJavaVersion(mcVersion) {
 
 function getCurrentJavaVersion() {
     try {
-        const output = execSync('java -version', { stdio: 'pipe' }).toString();
+        // java -version suele imprimir en stderr, por lo que redirigimos 2>&1
+        const output = execSync('java -version 2>&1', { stdio: 'pipe' }).toString();
         const match = output.match(/(?:version|openjdk version) "(?:1\.)?(\d+)/);
         return match ? parseInt(match[1], 10) : 0;
     } catch (e) {
