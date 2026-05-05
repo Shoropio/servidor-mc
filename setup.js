@@ -202,6 +202,7 @@ async function setupJava() {
 
     // 7. Generar archivos de configuración iniciales
     fs.writeFileSync(path.join(javaDir, 'eula.txt'), 'eula=true\n');
+    fs.writeFileSync(path.join(javaDir, 'server.properties'), 'online-mode=false\n');
     fs.writeFileSync(path.join(javaDir, 'start.bat'), `@echo off\n:: Requiere Java ${javaVer} (Actual detectado: ${currentJava || '?'})\njava -Xms8G -Xmx8G -jar server.jar nogui\npause\n`);
 
     console.log('¡Configuración del servidor Java completada!');
