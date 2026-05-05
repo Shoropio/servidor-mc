@@ -1,169 +1,98 @@
 # 🎮 Minecraft Server Manager
 
-Gestor simple para iniciar y administrar servidores de **Minecraft Java (PaperMC)** y **Minecraft Bedrock (Official Dedicated Server)** desde un menú interactivo.
+![Minecraft Server Banner](./assets/banner.png)
+
+![Version](https://img.shields.io/badge/Minecraft-Java%20%26%20Bedrock-brightgreen)
+![Node.js](https://img.shields.io/badge/Node.js-v16%2B-blue)
+![License](https://img.shields.io/badge/License-MIT-orange)
+![Java](https://img.shields.io/badge/Java-21%20%2F%2025-red)
+
+Gestor automatizado para desplegar y administrar servidores de **Minecraft Java (PaperMC)** y **Minecraft Bedrock** con soporte nativo para **Cross-play**.
 
 ---
 
-## 📌 Descripción
+## 🚀 Características Principales
 
-Este proyecto permite ejecutar fácilmente servidores de Minecraft sin configuraciones complejas. Incluye soporte para **cross-play** mediante **GeyserMC**, permitiendo que jugadores de Java y Bedrock jueguen juntos en el mismo servidor.
+*   **Instalación One-Click**: Descarga y configura automáticamente PaperMC y Bedrock Server.
+*   **Soporte Cross-play**: Configurado con Geyser y Floodgate para que jugadores de consola/móvil se unan al servidor Java.
+*   **Detección Inteligente**: El script `setup.js` verifica tu versión de Java y te guía si necesitas una actualización.
+*   **Menú Interactivo**: Un solo archivo `.bat` para lanzar cualquiera de los dos servidores.
 
 ---
 
-## ⚙️ Requisitos
+## ⚙️ Requisitos del Sistema
 
-- 🖥️ Windows 10 / 11  
-- ☕ **Java 25** instalado (Requerido para las últimas versiones de PaperMC)  
-- 🟢 **Node.js** instalado (para ejecutar el script de instalación inicial)  
-- 🌐 Conexión a internet (para descargas iniciales)  
-- 🔓 Puertos abiertos (si quieres acceso externo: 25565 y 19132)
+*   **S.O.**: Windows 10 / 11
+*   **Entorno**: [Node.js](https://nodejs.org/) instalado.
+*   **Java**: 
+    *   **Java 21/25** (Recomendado para las versiones más recientes).
+    *   *Nota: El instalador detectará automáticamente qué versión necesitas según la versión de Minecraft.*
+*   **Red**: Puertos `25565` (Java) y `19132` (Bedrock) abiertos para acceso externo.
 
 ---
 
 ## 📂 Estructura del Proyecto
 
-
 ```text
 servidor-mc/
-│
-├── java/               # Archivos del servidor Java
-│   ├── server.jar      # PaperMC
-│   └── plugins/        # Geyser, Floodgate, etc.
-│
-├── bedrock/            # Archivos del servidor Bedrock
-│   └── ...             # Archivos oficiales de Mojang
-│
-├── setup.js            # Script de instalación automática
-└── start.bat           # Menú de inicio rápido
+├── java/               # Servidor PaperMC
+│   ├── plugins/        # GeyserMC, Floodgate, etc.
+│   └── start.bat       # Script de inicio (8GB RAM por defecto)
+├── bedrock/            # Servidor Oficial Bedrock
+│   └── start.bat       # Script de inicio rápido
+├── setup.js            # Cerebro de la instalación
+└── start.bat           # Menú principal de acceso
 ```
-
 
 ---
 
-### 1️⃣ Instalación Inicial
-Si es la primera vez que usas el proyecto, necesitas descargar los archivos del servidor (Requiere Git):
+## 🛠️ Instalación y Uso
 
-```powershell
-git clone https://github.com/Shoropio/servidor-mc.git
-```
-
-```powershell
-cd servidor-mc
-```
+### 1. Clonar y Configurar
+Si es tu primera vez, abre una terminal en la carpeta raíz y ejecuta:
 
 ```powershell
 node setup.js
 ```
-*El script incluye una **barra de progreso en tiempo real** y configurará automáticamente la EULA y los scripts de inicio.*
+*Este script descargará los archivos necesarios, aceptará la EULA y configurará los límites de memoria.*
 
-### 2️⃣ Iniciar el Servidor
-Una vez descargado todo:
-1. Ejecuta `start.bat` en la carpeta raíz.  
-2. Selecciona la opción deseada:
-   - `1` → Servidor **Java (PaperMC)**  
-   - `2` → Servidor **Bedrock**  
-3. ¡Listo! El servidor iniciará automáticamente.
-
----
-
-## ☕ Configuración
-
-### 🧱 Servidor Java (PaperMC)
-
-- **Java requerido:** 25 ([Descargar aquí](https://adoptium.net/es/temurin/releases))  
-- **Memoria RAM:**
-  Edita en `java/start.bat`:
-
-```bash
--Xms2G -Xmx2G
-```
-
-- **Plugins incluidos:**
-- GeyserMC → Permite jugadores Bedrock  
-- Floodgate → Login sin cuenta Java  
-
-- **Java en PATH (recomendado):**
-Asegúrate de poder ejecutar:
+### 2. Iniciar el Servidor
+Solo necesitas ejecutar el archivo principal:
 
 ```powershell
-java -version
+./start.bat
+```
+Selecciona `1` para Java o `2` para Bedrock. ¡Y listo!
+
+---
+
+## ☕ Configuración Avanzada
+
+### Memoria RAM (Java)
+Por defecto, el servidor Java está configurado con **8GB de RAM**. Puedes cambiar esto editando `java/start.bat`:
+```batch
+java -Xms4G -Xmx4G -jar server.jar nogui
 ```
 
+### Cross-play (Geyser)
+Los jugadores de Bedrock pueden entrar usando la IP de tu PC y el puerto `19132`. No necesitan una cuenta de Java gracias a Floodgate.
 
 ---
 
-### 📱 Servidor Bedrock
+## ❓ Solución de Problemas
 
-Edita `bedrock/server.properties`:
+**¿Error de versión de Java?**
+Si `setup.js` indica que tu versión es insuficiente, descarga la última versión [Temurin (Adoptium)](https://adoptium.net/es/temurin/releases).
 
-- `server-name` → Nombre del servidor  
-- `gamemode` → survival / creative  
-- `difficulty` → easy / normal / hard  
-- `server-port` → 19132 (por defecto)  
-- `level-name` → mundo  
+**¿No pueden entrar desde fuera?**
+Asegúrate de haber hecho "Port Forwarding" en tu router para los puertos `25565` (TCP) y `19132` (UDP).
 
 ---
 
-## 🌍 Cross-play (Java + Bedrock)
+## 📜 Licencia y Créditos
 
-Gracias a GeyserMC:
-
-- Los jugadores de **Bedrock pueden entrar al servidor Java**
-- Configuración por defecto:
-- 📡 IP: la misma del servidor Java  
-- 🔌 Puerto: `19132`  
+Este proyecto está bajo la licencia **MIT**. Desarrollado por **Shoropio Corporation**.
 
 ---
-
-## 🌐 Red y Puertos
-
-Para permitir conexiones externas:
-
-- Abre los siguientes puertos en tu router/firewall:
-- `25565` → Minecraft Java  
-- `19132` → Bedrock / Geyser  
-
-⚠️ No compartas tu IP pública con desconocidos.
-
----
-
-## 🛠 Problemas comunes
-
-**❌ El servidor no inicia o setup.js se detiene**
-- Verifica que **Java 25** esté instalado. Puedes bajarlo de [Adoptium](https://adoptium.net/es/temurin/releases).
-- Revisa que `java` esté en el PATH.
-- `setup.js` detendrá la instalación si no detecta al menos la versión de Java requerida para el servidor seleccionado.
-
-**❌ No pueden conectarse**
-- Revisa firewall  
-- Verifica port forwarding  
-- Asegúrate de usar la IP correcta  
-
----
-
-## 📜 Licencia
-
-Este proyecto está bajo la licencia **MIT**.  
-Puedes usarlo, modificarlo y distribuirlo libremente.
-
----
-
-## 💡 Notas
-
-- La EULA de Mojang ya está aceptada por defecto  
-- Ideal para uso local o servidores pequeños  
-- Puedes ampliar fácilmente con más plugins o configuraciones  
-
-
-## 🤝 Contribuir
-
-Las contribuciones son bienvenidas. Si deseas mejorar este proyecto, por favor sigue estos pasos:
-1. Crea un **fork** del proyecto  
-2. Crea una **feature branch**  
-3. Haz tu commit  
-4. Abre un **pull request**
-
----
-
-
-© 2026 Shoropio Corporation. Todos los derechos reservados.
+> [!TIP]
+> Mantén siempre una copia de seguridad de la carpeta `world` antes de realizar actualizaciones mayores con `setup.js`.
