@@ -23,7 +23,7 @@ Gestor automatizado para desplegar y administrar servidores de **Minecraft Java 
 ## ⚙️ Requisitos del Sistema
 
 *   **S.O.**: Windows 10 / 11
-*   **Entorno**: [Node.js](https://nodejs.org/) instalado.
+*   **Entorno**: [Git](https://git-scm.com/downloads) y [Node.js](https://nodejs.org/) instalados.
 *   **Java**: 
     *   **Java 21/25** (Recomendado para las versiones más recientes).
     *   *Nota: El instalador detectará automáticamente qué versión necesitas según la versión de Minecraft.*
@@ -50,6 +50,14 @@ servidor-mc/
 
 ### 1. Clonar y Configurar
 Si es tu primera vez, abre una terminal en la carpeta raíz y ejecuta:
+
+```powershell
+git clone https://github.com/Shoropio/servidor-mc.git
+```
+
+```powershell
+cd servidor-mc
+```
 
 ```powershell
 node setup.js
