@@ -13,7 +13,7 @@ Este proyecto permite ejecutar fácilmente servidores de Minecraft sin configura
 ## ⚙️ Requisitos
 
 - 🖥️ Windows 10 / 11  
-- ☕ **Java 21** instalado (para PaperMC)  
+- ☕ **Java 25** instalado (Requerido para las últimas versiones de PaperMC)  
 - 🟢 **Node.js** instalado (para ejecutar el script de instalación inicial)  
 - 🌐 Conexión a internet (para descargas iniciales)  
 - 🔓 Puertos abiertos (si quieres acceso externo: 25565 y 19132)
@@ -70,7 +70,7 @@ Una vez descargado todo:
 
 ### 🧱 Servidor Java (PaperMC)
 
-- **Java requerido:** 21  
+- **Java requerido:** 25 ([Descargar aquí](https://adoptium.net/es/temurin/releases))  
 - **Memoria RAM:**
   Edita en `java/start.bat`:
 
@@ -129,9 +129,10 @@ Para permitir conexiones externas:
 
 ## 🛠 Problemas comunes
 
-**❌ El servidor no inicia**
-- Verifica que Java 21 esté instalado  
-- Revisa que `java` esté en el PATH  
+**❌ El servidor no inicia o setup.js se detiene**
+- Verifica que **Java 25** esté instalado. Puedes bajarlo de [Adoptium](https://adoptium.net/es/temurin/releases).
+- Revisa que `java` esté en el PATH.
+- `setup.js` detendrá la instalación si no detecta al menos la versión de Java requerida para el servidor seleccionado.
 
 **❌ No pueden conectarse**
 - Revisa firewall  

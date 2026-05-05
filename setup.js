@@ -123,34 +123,46 @@ async function setupJava() {
 
     console.log('Configurando el servidor de Java (PaperMC)...');
     const project = 'paper';
-    const versionsData = JSON.parse(await fetch(`https://api.papermc.io/v2/projects/${project}`));
-
-    // Ordenar versiones numéricamente para encontrar la más reciente real
-    const allVersions = versionsData.versions.sort(compareVersions);
-    const latestVersion = allVersions[allVersions.length - 1];
-
-    const buildsData = JSON.parse(await fetch(`https://api.papermc.io/v2/projects/${project}/versions/${latestVersion}`));
-    const latestBuild = buildsData.builds[buildsData.builds.length - 1];
-
-    const downloadUrl = `https://api.papermc.io/v2/projects/${project}/versions/${latestVersion}/builds/${latestBuild}/downloads/paper-${latestVersion}-${latestBuild}.jar`;
-    const dest = jarPath;
-
+    const baseUrl = 'https://fill.papermc.io/v3';
+    
+    // Obtener todas las versiones de la API v3
+    const projectsData = JSON.parse(await fetch(`${baseUrl}/projects/${project}`));
+    
+    // En v3, versions es un objeto { "26.1": ["26.1.2", ...], "1.21": [...] }
+    const majorVersions = Object.keys(projectsData.versions).sort(compareVersions);
+    const latestMajor = majorVersions[majorVersions.length - 1];
+    const latestVersion = projectsData.versions[latestMajor].sort(compareVersions).pop();
+    
+    console.log(`Versión detectada: ${latestVersion}`);
+    
+    // Obtener detalles de la versión (incluye requisitos de Java)
+    const versionData = JSON.parse(await fetch(`${baseUrl}/projects/${project}/versions/${latestVersion}`));
+    const latestBuildId = versionData.builds.sort((a, b) => a - b).pop();
+    
+    // Obtener detalles del build y URL de descarga
+    const buildData = JSON.parse(await fetch(`${baseUrl}/projects/${project}/versions/${latestVersion}/builds/${latestBuildId}`));
+    const downloadInfo = buildData.downloads['server:default'];
+    const downloadUrl = downloadInfo.url;
+    
     if (!fs.existsSync(javaDir)) fs.mkdirSync(javaDir);
-
-    console.log(`Descargando Paper ${latestVersion} compilación ${latestBuild}...`);
+    
+    console.log(`Descargando Paper ${latestVersion} compilación ${latestBuildId}...`);
     await downloadFile(downloadUrl, dest);
-
-    const javaVer = getRequiredJavaVersion(latestVersion);
+    
+    // Usar el requisito de Java de la API si existe, si no el mapeo local
+    const javaVer = versionData.version.java?.version?.minimum || getRequiredJavaVersion(latestVersion);
     const currentJava = getCurrentJavaVersion();
 
     console.log(`Este servidor requiere Java ${javaVer}.`);
-    
+
     if (currentJava < javaVer) {
-        console.warn('\n' + '!'.repeat(50));
-        console.warn(`¡ADVERTENCIA! Tu versión de Java (${currentJava || 'No detectada'}) es menor a la requerida (${javaVer}).`);
-        console.log(`Se recomienda actualizar a Java ${javaVer} o superior para usar las últimas versiones.`);
-        console.log('Puedes descargarlo desde: https://adoptium.net/es/');
-        console.warn('!'.repeat(50) + '\n');
+        console.error('\n' + '!'.repeat(50));
+        console.error(`¡ERROR CRÍTICO! Tu versión de Java (${currentJava || 'No detectada'}) es insuficiente.`);
+        console.error(`Este servidor requiere obligatoriamente Java ${javaVer} o superior.`);
+        console.error(`Por favor, descarga e instala Java ${javaVer} desde:`);
+        console.error('https://adoptium.net/es/temurin/releases');
+        console.error('!'.repeat(50) + '\n');
+        process.exit(1);
     } else {
         console.log(`Versión de Java detectada: ${currentJava}. ¡Todo listo!`);
     }
