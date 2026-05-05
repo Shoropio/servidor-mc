@@ -5,6 +5,11 @@ const { execSync } = require('child_process');
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
+/**
+ * Realiza una petición GET HTTPS y devuelve el cuerpo de la respuesta como una cadena.
+ * @param {string} url - La URL a la que se realizará la petición.
+ * @returns {Promise<string>} Promesa que resuelve con los datos de la respuesta.
+ */
 function fetch(url) {
     return new Promise((resolve, reject) => {
         const options = {
@@ -20,6 +25,12 @@ function fetch(url) {
 
 const http = require('http');
 
+/**
+ * Compara dos cadenas de versión (ej. '1.21.1', '1.21.11') numéricamente.
+ * @param {string} v1 - Primera versión a comparar.
+ * @param {string} v2 - Segunda versión a comparar.
+ * @returns {number} 1 si v1 > v2, -1 si v1 < v2, 0 si son iguales.
+ */
 function compareVersions(v1, v2) {
     const parts1 = v1.split('.').map(Number);
     const parts2 = v2.split('.').map(Number);
@@ -32,6 +43,11 @@ function compareVersions(v1, v2) {
     return 0;
 }
 
+/**
+ * Determina la versión de Java requerida basada en la versión de Minecraft.
+ * @param {string} mcVersion - Versión de Minecraft.
+ * @returns {number} Versión de Java recomendada (8, 17, 21, 25).
+ */
 function getRequiredJavaVersion(mcVersion) {
     // 26.1+ -> Java 25
     // 1.20 a 1.21.11 -> Java 21
@@ -42,6 +58,10 @@ function getRequiredJavaVersion(mcVersion) {
     return 8;
 }
 
+/**
+ * Intenta detectar la versión mayor de Java instalada en el sistema.
+ * @returns {number} Versión de Java detectada o 0 si falla.
+ */
 function getCurrentJavaVersion() {
     try {
         // java -version suele imprimir en stderr, por lo que redirigimos 2>&1
@@ -53,7 +73,13 @@ function getCurrentJavaVersion() {
     }
 }
 
-
+/**
+ * Descarga un archivo desde una URL y lo guarda en el destino especificado.
+ * Incluye una barra de progreso en consola.
+ * @param {string} url - URL de descarga.
+ * @param {string} dest - Ruta local donde se guardará el archivo.
+ * @returns {Promise<void>}
+ */
 function downloadFile(url, dest) {
     return new Promise((resolve, reject) => {
         const options = {
@@ -113,6 +139,11 @@ function downloadFile(url, dest) {
     });
 }
 
+/**
+ * Configura el servidor de Minecraft Java descargando PaperMC,
+ * aceptando la EULA y generando los archivos de inicio.
+ * @returns {Promise<void>}
+ */
 async function setupJava() {
     const javaDir = path.join(__dirname, 'java');
     const jarPath = path.join(javaDir, 'server.jar');
@@ -125,32 +156,33 @@ async function setupJava() {
     console.log('Configurando el servidor de Java (PaperMC)...');
     const project = 'paper';
     const baseUrl = 'https://fill.papermc.io/v3';
-    
-    // Obtener todas las versiones de la API v3
+
+    // 1. Obtener lista de versiones desde la API v3
     const projectsData = JSON.parse(await fetch(`${baseUrl}/projects/${project}`));
-    
-    // En v3, versions es un objeto { "26.1": ["26.1.2", ...], "1.21": [...] }
+
+    // 2. Determinar la versión más reciente (v3 utiliza estructura anidada)
     const majorVersions = Object.keys(projectsData.versions).sort(compareVersions);
     const latestMajor = majorVersions[majorVersions.length - 1];
     const latestVersion = projectsData.versions[latestMajor].sort(compareVersions).pop();
-    
+
     console.log(`Versión detectada: ${latestVersion}`);
-    
-    // Obtener detalles de la versión (incluye requisitos de Java)
+
+    // 3. Obtener detalles de la versión y el build más reciente
     const versionData = JSON.parse(await fetch(`${baseUrl}/projects/${project}/versions/${latestVersion}`));
     const latestBuildId = versionData.builds.sort((a, b) => a - b).pop();
-    
-    // Obtener detalles del build y URL de descarga
+
+    // 4. Obtener URL de descarga desde los metadatos del build
     const buildData = JSON.parse(await fetch(`${baseUrl}/projects/${project}/versions/${latestVersion}/builds/${latestBuildId}`));
     const downloadInfo = buildData.downloads['server:default'];
     const downloadUrl = downloadInfo.url;
-    
+
     if (!fs.existsSync(javaDir)) fs.mkdirSync(javaDir);
-    
+
+    // 5. Descargar archivo JAR
     console.log(`Descargando Paper ${latestVersion} compilación ${latestBuildId}...`);
     await downloadFile(downloadUrl, jarPath);
-    
-    // Usar el requisito de Java de la API si existe, si no el mapeo local
+
+    // 6. Validar requisitos de Java
     const javaVer = versionData.version.java?.version?.minimum || getRequiredJavaVersion(latestVersion);
     const currentJava = getCurrentJavaVersion();
 
@@ -168,14 +200,18 @@ async function setupJava() {
         console.log(`Versión de Java detectada: ${currentJava}. ¡Todo listo!`);
     }
 
+    // 7. Generar archivos de configuración iniciales
     fs.writeFileSync(path.join(javaDir, 'eula.txt'), 'eula=true\n');
-    // Mantenemos los 8GB solicitados anteriormente
     fs.writeFileSync(path.join(javaDir, 'start.bat'), `@echo off\n:: Requiere Java ${javaVer} (Actual detectado: ${currentJava || '?'})\njava -Xms8G -Xmx8G -jar server.jar nogui\npause\n`);
 
     console.log('¡Configuración del servidor Java completada!');
 }
 
-
+/**
+ * Configura el servidor de Minecraft Bedrock descargando la última versión
+ * oficial de Mojang y extrayendo los archivos necesarios.
+ * @returns {Promise<void>}
+ */
 async function setupBedrock() {
     const bedrockDir = path.join(__dirname, 'bedrock');
     const exePath = path.join(bedrockDir, 'bedrock_server.exe');
@@ -213,6 +249,9 @@ async function setupBedrock() {
     console.log('¡Configuración del servidor Bedrock completada!');
 }
 
+/**
+ * Función principal que orquestra la configuración de ambos servidores.
+ */
 async function main() {
     try {
         await setupJava();
